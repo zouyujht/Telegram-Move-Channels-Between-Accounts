@@ -1,9 +1,20 @@
 from telethon.sync import TelegramClient
 from telethon.tl.functions.channels import JoinChannelRequest
 import asyncio
+import os
+from urllib.parse import urlparse
 
 async def import_channels(api_id, api_hash, phone, import_file):
-    async with TelegramClient('anon', api_id, api_hash) as client:
+    proxy = None
+    http_proxy = os.environ.get('HTTP_PROXY')
+    if http_proxy:
+        parsed = urlparse(http_proxy)
+        proxy_type = parsed.scheme
+        if proxy_type.startswith('http'):
+            proxy_type = 'http'
+        proxy = (proxy_type, parsed.hostname, parsed.port)
+
+    async with TelegramClient('anon', api_id, api_hash, proxy=proxy) as client:
         # Ensure you're authorised
         await client.start(phone)
 
@@ -25,5 +36,4 @@ if __name__ == '__main__':
     phone = input('YOUR_PHONE_NUMBER: ')  # Get user input for phone number
     import_file = 'channels.txt'  # Input file
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(import_channels(api_id, api_hash, phone, import_file))
+    asyncio.run(import_channels(api_id, api_hash, phone, import_file))

@@ -1,8 +1,19 @@
 from telethon.sync import TelegramClient
 import asyncio
+import os
+from urllib.parse import urlparse
 
 async def export_channels(api_id, api_hash, phone, export_file):
-    async with TelegramClient('anon', api_id, api_hash) as client:
+    proxy = None
+    http_proxy = os.environ.get('HTTP_PROXY')
+    if http_proxy:
+        parsed = urlparse(http_proxy)
+        proxy_type = parsed.scheme
+        if proxy_type.startswith('http'):
+            proxy_type = 'http'
+        proxy = (proxy_type, parsed.hostname, parsed.port)
+
+    async with TelegramClient('anon', api_id, api_hash, proxy=proxy) as client:
         # Ensure you're authorised
         await client.start(phone)
         print('Process Started.')
@@ -20,6 +31,5 @@ if __name__ == '__main__':
     phone = input('YOUR_PHONE_NUMBER: ')  # Replace with your phone number
     export_file = 'channels.txt'  # Output file
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(export_channels(api_id, api_hash, phone, export_file))
+    asyncio.run(export_channels(api_id, api_hash, phone, export_file))
     print('Process Complete.')

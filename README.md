@@ -9,7 +9,9 @@ This project consists of two Python scripts that enable you to transfer Telegram
   - [Clone the Repository](#clone-the-repository)
   - [Install Dependencies](#install-dependencies)
 - [How to Get Telegram API Credentials](#how-to-get-telegram-api-credentials)
+- [Proxy Configuration](#proxy-configuration)
 - [Usage](#usage)
+  - [Using Wrapper Scripts (Recommended)](#using-wrapper-scripts-recommended)
   - [Export Channels](#export-channels)
   - [Import Channels](#import-channels)
 
@@ -44,29 +46,30 @@ Replace `<repository_link>` with the URL of this GitHub repository, which you ca
 
 ### Install Dependencies
 
-Before running any Python code, you'll need to install the required Python packages. Follow these steps to install the dependencies:
+This project relies on `uv` for fast and reliable dependency management.
 
-1. Make sure you have Python installed. If not, you can download and install it from [here](https://www.python.org/downloads/).
+1. Ensure you have Python installed.
   
-2. Open your terminal (Command Prompt on Windows, Terminal on macOS or Linux).
+2. Install `uv` if you haven't already. You can install it globally via pip:
+   
+    ```bash
+    pip install uv
+    ```
   
-3. Navigate to the project folder where the `requirements.txt` file is located. If you've just cloned the repository, you should do:
+3. Navigate to the project folder where the `requirements.txt` file is located:
 
     ```bash
     cd path/to/cloned/repository
     ```
   
-4. Once you're in the project folder, run the following command to install the required Python packages:
+4. Use `uv` to create a virtual environment and install the required dependencies (including `telethon` and `python-socks` for proxy support):
 
     ```bash
-    pip install -r requirements.txt
+    uv venv
+    uv pip install -r requirements.txt
     ```
 
-This will read the `requirements.txt` file and install all the packages listed there.
-
-
-
-This will install all the necessary packages listed in `requirements.txt`.
+This will automatically create a `.venv` directory and install all the necessary packages.
 
 ## How to Get Telegram API Credentials
 
@@ -78,7 +81,29 @@ Before you proceed, you'll need the `api_id` and `api_hash` from Telegram. Follo
 4. Fill out the form to create a new application.
 5. You will be given an `api_id` and an `api_hash`. Keep these safe.
 
+## Proxy Configuration
+
+If you need a proxy to access the Telegram API, you can configure it via the `proxy_config.json` file in the root directory:
+
+```json
+{
+  "use_proxy": true,
+  "proxy_url": "http://127.0.0.1:10808"
+}
+```
+
+Set `use_proxy` to `true` and update `proxy_url` to your HTTP proxy address. The `python-socks` dependency is required (and included if you use the updated project environment) to enable proxy support.
+
 ## Usage
+
+### Using Wrapper Scripts (Recommended)
+
+To simplify the execution and automatically apply your proxy settings, you can use the included wrapper scripts:
+
+- **Windows PowerShell (Recommended for Windows):** Run `.\run.ps1`
+- **Linux / macOS / Git Bash:** Run `./run.sh`
+
+The wrapper script will provide an interactive menu to easily choose between exporting or importing channels.
 
 ### Export Channels
 
